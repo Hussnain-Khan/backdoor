@@ -29,7 +29,7 @@ def login():
                 
                 password.decode()
                 print(password)
-                if hash(password) == 1634504265594755506:
+                if hash(password) == -1727202404301490094:
                         print('Login Success')
                         return True
                 else:
