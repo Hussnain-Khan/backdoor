@@ -1,41 +1,41 @@
-# Imports
-from ctypes.wintypes import INT
-from getpass import getpass
 import socket
-import subprocess
+from getpass import getpass
 
-# Setting Up IP/Sockets
-REMOTE_HOST = '127.0.0.1'
-REMOTE_PORT = 4444
-client = socket.socket()
+SERVER_IP = '127.0.0.1'
+SERVER_PORT = 4444
 
-# Initializing Connection
-print("[-] Connection Initiating...")
-client.connect((REMOTE_HOST, REMOTE_PORT))
-print("[-] Connection initiated!")
+def connect_to_server():
+    client = socket.socket()
+    print("[CLIENT] Connecting to server...")
+    client.connect((SERVER_IP, SERVER_PORT))
+    print("[CLIENT] Connected.")
 
+    password = getpass("Enter password: ")
+    client.send(password.encode())
 
-password = getpass()
-client.send(password.encode())
+    response = client.recv(1024).decode().strip()
+    if response == "success":
+        print("[CLIENT] Login Successful!\n")
+    else:
+        print("[CLIENT] Login Failed!")
+        client.close()
+        return
 
-# Runtime Loop
-while True:
-        command = input('Enter Command: ')
-        while command == '':
-                command = input('Enter Command: ')
+    while True:
+        cmd = input(">>> ")
+        if cmd.lower() == "exit":
+            client.send(cmd.encode())
+            break
 
-        command = command.encode()
+        if cmd.strip() == "":
+            continue
 
-        client.send(command)
+        client.send(cmd.encode())
+        result = client.recv(4096).decode()
+        print(result)
 
-        if command == b'exit':
-                break
+    client.close()
+    print("[CLIENT] Connection closed.")
 
-        output = client.recv(1024)
-        output = output.decode()
-        if output == 'no stdout':
-                print()
-        else:
-                print(output)
-
-client.close()
+if __name__ == "__main__":
+    connect_to_server()
