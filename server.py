@@ -3,10 +3,12 @@ import subprocess
 
 HOST = ''
 PORT = 4444
+EXPECTED_PASSWORD = "week4"
 
 def start_server():
     print("[SERVER] Initializing...")
     server = socket.socket()
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server.bind((HOST, PORT))
     server.listen(1)
     print("[SERVER] Waiting for connection...")
@@ -17,15 +19,15 @@ def start_server():
             print(f"[SERVER] Connected to {address}")
 
             password = client.recv(1024).decode().strip()
-            print(f"[LOGIN ATTEMPT] Password received: {password}")
+            print(f"[LOGIN ATTEMPT] Password received: '{password}'")
 
-            if password == "week4":
+            if password.lower() == EXPECTED_PASSWORD.lower():
                 client.send(b"success")
                 print("[SERVER] Login successful.")
                 handle_client(client)
             else:
                 client.send(b"fail")
-                print("[SERVER] Login failed.")
+                print(f"[SERVER] Login failed. Expected: '{EXPECTED_PASSWORD}', Got: '{password}'")
                 client.close()
         except Exception as e:
             print(f"[SERVER ERROR] {e}")

@@ -14,6 +14,8 @@ def connect_to_server():
     client.send(password.encode())
 
     response = client.recv(1024).decode().strip()
+    print(f"[CLIENT DEBUG] Server responded with: '{response}'")
+
     if response == "success":
         print("[CLIENT] Login Successful!\n")
     else:
