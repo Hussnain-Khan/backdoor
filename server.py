@@ -29,7 +29,7 @@ def login():
                 
                 password.decode()
                 print(password)
-                if hash(password) == 4486675397656486772:
+                if hash(password) == 1634504265594755506:
                         print('Login Success')
                         client.send(b"success")
                         return True
