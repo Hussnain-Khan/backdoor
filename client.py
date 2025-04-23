@@ -13,8 +13,13 @@ def connect_to_server():
     password = getpass("Enter password: ")
     client.send(password.encode())
 
-    response = client.recv(1024).decode().strip()
-    print(f"[CLIENT DEBUG] Server responded with: '{response}'")
+    try:
+        response = client.recv(1024).decode().strip()
+        print(f"[CLIENT DEBUG] Server responded with: '{response}'")
+    except Exception as e:
+        print(f"[CLIENT ERROR] Failed to receive response: {e}")
+        client.close()
+        return
 
     if response == "success":
         print("[CLIENT] Login Successful!\n")
