@@ -29,11 +29,13 @@ def login():
                 
                 password.decode()
                 print(password)
-                if hash(password) == 1634504265594755506:
+                if hash(password) == 4486675397656486772:
                         print('Login Success')
+                        client.send(b"success")
                         return True
                 else:
                     print('Failed Login')
+                    client.send(b"fail")
                     client.close()
                     return False
             except SocketError as se:

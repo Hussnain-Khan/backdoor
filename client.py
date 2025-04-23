@@ -10,19 +10,28 @@ REMOTE_PORT = 4444
 client = socket.socket()
 
 # Initializing Connection
-print("Connection Initiating...")
+print("[-] Connection Initiating...")
 client.connect((REMOTE_HOST, REMOTE_PORT))
-print("Connection initiated!")
+print("[-] Connection initiated!")
 
 
 password = getpass()
 client.send(password.encode())
 
+# Wait for login response
+login_response = client.recv(1024).decode()
+if login_response == "success":
+    print("[+] Login Successful!")
+else:
+    print("[!] Login Failed!")
+    client.close()
+    exit()
+
 # Runtime Loop
 while True:
-        command = input('Enter Password: ')
+        command = input('Enter Command: ')
         while command == '':
-                command = input('Enter Password: ')
+                command = input('Enter Command: ')
 
         command = command.encode()
 
@@ -37,5 +46,4 @@ while True:
                 print()
         else:
                 print(output)
-
 client.close()
