@@ -18,15 +18,6 @@ print("[-] Connection initiated!")
 password = getpass()
 client.send(password.encode())
 
-# Wait for login response
-login_response = client.recv(1024).decode()
-if login_response == "success":
-    print("[+] Login Successful!")
-else:
-    print("[!] Login Failed!")
-    client.close()
-    exit()
-
 # Runtime Loop
 while True:
         command = input('Enter Command: ')
@@ -46,4 +37,5 @@ while True:
                 print()
         else:
                 print(output)
+
 client.close()
