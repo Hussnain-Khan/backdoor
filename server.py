@@ -14,40 +14,59 @@ def start_server():
     print("[SERVER] Waiting for connection...")
 
     while True:
+        print("[SERVER] Waiting for client connection...")
         try:
             client, address = server.accept()
-            print(f"[SERVER] Connected to {address}")
+            print("[SERVER] Connected to %s" % str(address))
+        except Exception as e:
+            print("[SERVER ERROR] While accepting connection: %s" % str(e))
+            continue
 
-            password = client.recv(1024).decode().strip()
-            print(f"[LOGIN ATTEMPT] Password received: '{password}'")
+        try:
+            data = client.recv(1024)
+            password = data.strip()
+            print("[LOGIN ATTEMPT] Password received: '%s'" % password)
+        except Exception as e:
+            print("[SERVER ERROR] During password receive or decode: %s" % str(e))
+            client.close()
+            continue
 
-            if password.lower() == EXPECTED_PASSWORD.lower():
-                client.send(b"success")
+        if password.lower() == EXPECTED_PASSWORD.lower():
+            try:
+                client.send("success")
                 print("[SERVER] Login successful.")
                 handle_client(client)
-            else:
-                client.send(b"fail")
-                print(f"[SERVER] Login failed. Expected: '{EXPECTED_PASSWORD}', Got: '{password}'")
+            except Exception as e:
+                print("[SERVER ERROR] While sending success or starting command loop: %s" % str(e))
                 client.close()
-        except Exception as e:
-            print(f"[SERVER ERROR] {e}")
-            continue
+        else:
+            try:
+                client.send("fail")
+                print("[SERVER] Login failed. Expected: '%s', Got: '%s'" % (EXPECTED_PASSWORD, password))
+            except Exception as e:
+                print("[SERVER ERROR] While sending fail: %s" % str(e))
+            client.close()
 
 def handle_client(client):
     while True:
         try:
-            command = client.recv(1024).decode().strip()
+            print("[SERVER] Waiting for command...")
+            command = client.recv(1024).strip()
+            print("[SERVER] Command received: '%s'" % command)
+
             if not command or command.lower() == 'exit':
                 break
 
-            result = subprocess.run(command, shell=True, capture_output=True, text=True)
-            response = result.stdout + result.stderr
+            proc = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err = proc.communicate()
+            response = out + err
             if not response:
                 response = "no stdout"
 
-            client.send(response.encode())
+            client.send(response)
+            print("[SERVER] Response sent.")
         except Exception as e:
-            print(f"[COMMAND ERROR] {e}")
+            print("[COMMAND ERROR] %s" % str(e))
             break
 
     client.close()
