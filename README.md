@@ -50,7 +50,7 @@ ___________________________________
 
 
 Once this done, Clone the reopsitory in your system and navigate from terminal to Python folder directory and run <br>
-`python sys.py`
+`python access.py`
 
 ___________________________________
 
