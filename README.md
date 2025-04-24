@@ -54,11 +54,11 @@ Once this done, Clone the reopsitory in your system and navigate from terminal t
 
 B) how your backdoor works internally
 
-Our backdoor operates by deploying a persistent listener on the target machine using a Bash script (sys-upd) managed by a systemd service (sys-upd.service). This script opens TCP port 4444 and runs the Python server (sys.py) which continuously listens for incoming connections. 
+- Our backdoor operates by deploying a persistent listener on the target machine using a Bash script (sys-upd) managed by a systemd service (sys-upd.service). This script opens TCP port 4444 and runs the Python server (sys.py) which continuously listens for incoming connections. 
 
-When a connection is received, it prompts for a password (week4) to authenticate the client. Upon successful login, the server receives and executes shell commands from the client (access.py) and sends back the results. 
+- When a connection is received, it prompts for a password (week4) to authenticate the client. Upon successful login, the server receives and executes shell commands from the client (access.py) and sends back the results. 
 
-All communication is socket-based and occurs over the specified port, enabling the attacker to remotely control the host shell in real time while maintaining persistence across reboots.
+- All communication is socket-based and occurs over the specified port, enabling the attacker to remotely control the host shell in real time while maintaining persistence across reboots.
 
 ___________________________________
 
@@ -70,22 +70,22 @@ C) how your backdoor works internally
 
 2. Persistence
 
-Persistence is achieved using a systemd service (sys-upd.service). The backdoor is enabled to auto-start on boot using systemctl enable sys-upd, ensuring the listener runs continuously.
+- Persistence is achieved using a systemd service (sys-upd.service). The backdoor is enabled to auto-start on boot using systemctl enable sys-upd, ensuring the listener runs continuously.
 
 3. Configuration to get commands from:
 
-Commands are received over the network socket (TCP on port 4444). The sys.py server waits for incoming commands from the client and executes them directly.
+- Commands are received over the network socket (TCP on port 4444). The sys.py server waits for incoming commands from the client and executes them directly.
 
 4. Authentication
 
-The backdoor requires a password (week4) before allowing shell access. If the password is incorrect, the connection is closed and access is denied.
+- The backdoor requires a password (week4) before allowing shell access. If the password is incorrect, the connection is closed and access is denied.
 
 5. Hiding from Detection
 
-The backdoor is disguised as a system update script: sys-upd. It is placed in the /root directory and registered as a systemd service with a generic name.. Minimal console output and error handling are included to avoid raising suspicion.
+- The backdoor is disguised as a system update script: sys-upd. It is placed in the /root directory and registered as a systemd service with a generic name.. Minimal console output and error handling are included to avoid raising suspicion.
 
 ___________________________________
 
 D) ideas on how yourbackdoor could be detected.
 
-The backdoor can be detected using tools like Wireshark by identifying unusual traffic on port 4444.It may also be exposed through system audits by spotting suspicious services like sys-upd.service or by detecting scripts fetched from GitHub. Security tools or EDRs could flag the listener's behavior of executing remote shell commands.
+- The backdoor can be detected using tools like Wireshark by identifying unusual traffic on port 4444.It may also be exposed through system audits by spotting suspicious services like sys-upd.service or by detecting scripts fetched from GitHub. Security tools or EDRs could flag the listener's behavior of executing remote shell commands.
