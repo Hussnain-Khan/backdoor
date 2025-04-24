@@ -6,7 +6,7 @@ HOST = ''
 PORT = 4444
 
 # SHA256 hash of "week4"
-HASHED_PASSWORD = "a76beef3410877c2cbc32b78f8583b4bf550834075b221fd25c1c691cb3da124"
+HASHED_PASSWORD = "a76beefa34107f7c2cb32b78f8583b4bf550834075b221fd25c1c691cb3da124"
 
 def start_server():
     print("[SERVER] Initializing...")
