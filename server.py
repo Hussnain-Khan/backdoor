@@ -21,10 +21,15 @@ def start_server():
             client, address = server.accept()
             print("[SERVER] Connected to %s" % str(address))
 
-            password = client.recv(1024).strip()
+            raw_data = client.recv(1024)
+            try:
+                password = raw_data.decode('utf-8').strip()
+            except:
+                password = raw_data.strip()
+
             print("[LOGIN ATTEMPT] Password received: '%s'" % password)
 
-            # Compute SHA256 hash
+            # Hash the received password
             hashed = hashlib.sha256(password).hexdigest()
             print("[DEBUG] Computed hash: %s" % hashed)
 
