@@ -30,14 +30,12 @@ def start_server():
 
             print("[LOGIN ATTEMPT] Password received: '%s'" % password)
 
-            # Ensure password is bytes before hashing
+            # 🔒 Bulletproof hashing: handles both unicode and str
             try:
-                if isinstance(password, unicode):
-                    password = password.encode('utf-8')
+                hashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
             except:
-                pass  # Python 3 won't raise this
+                hashed = hashlib.sha256(password).hexdigest()
 
-            hashed = hashlib.sha256(password).hexdigest()
             print("[DEBUG] Computed hash: %s" % hashed)
 
             if hashed == HASHED_PASSWORD:
