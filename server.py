@@ -14,38 +14,24 @@ def start_server():
     print("[SERVER] Waiting for connection...")
 
     while True:
-        print("[SERVER] Waiting for client connection...")
         try:
             client, address = server.accept()
             print("[SERVER] Connected to %s" % str(address))
-        except Exception as e:
-            print("[SERVER ERROR] While accepting connection: %s" % str(e))
-            continue
 
-        try:
-            data = client.recv(1024)
-            password = data.strip()
+            password = client.recv(1024).strip()
             print("[LOGIN ATTEMPT] Password received: '%s'" % password)
-        except Exception as e:
-            print("[SERVER ERROR] During password receive or decode: %s" % str(e))
-            client.close()
-            continue
 
-        if password.lower() == EXPECTED_PASSWORD.lower():
-            try:
+            if password.lower() == EXPECTED_PASSWORD.lower():
                 client.send("success")
                 print("[SERVER] Login successful.")
                 handle_client(client)
-            except Exception as e:
-                print("[SERVER ERROR] While sending success or starting command loop: %s" % str(e))
-                client.close()
-        else:
-            try:
+            else:
                 client.send("fail")
                 print("[SERVER] Login failed. Expected: '%s', Got: '%s'" % (EXPECTED_PASSWORD, password))
-            except Exception as e:
-                print("[SERVER ERROR] While sending fail: %s" % str(e))
-            client.close()
+                client.close()
+        except Exception as e:
+            print("[SERVER ERROR] %s" % str(e))
+            continue
 
 def handle_client(client):
     while True:
