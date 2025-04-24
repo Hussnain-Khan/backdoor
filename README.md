@@ -15,7 +15,7 @@ Python Scripts:
 
 - access.py: Client interface (run from attacker machine)
 
-A) how to install it in the week4 virtual machine,
+# A) how to install it in the week4 virtual machine
 
 Enable the host to communicate with the VM over port 4444, add this rule in VirtualBox:
 
@@ -54,7 +54,7 @@ Once this done, Clone the reopsitory in your system and navigate from terminal t
 
 ___________________________________
 
-B) how your backdoor works internally
+# B) how your backdoor works internally
 
 - Our backdoor operates by deploying a persistent listener on the target machine using a Bash script (sys-upd) managed by a systemd service (sys-upd.service). This script opens TCP port 4444 and runs the Python server (sys.py) which continuously listens for incoming connections. 
 
@@ -64,7 +64,7 @@ B) how your backdoor works internally
 
 ___________________________________
 
-C) how your backdoor works internally
+# C) how your backdoor works internally
 
 1. Remote Shell Access
 
@@ -88,7 +88,7 @@ C) how your backdoor works internally
 
 ___________________________________
 
-D) ideas on how yourbackdoor could be detected.
+# D) ideas on how yourbackdoor could be detected.
 
 - The backdoor can be detected using tools like Wireshark by identifying unusual traffic on port 4444.It may also be exposed through system audits by spotting suspicious services like sys-upd.service or by detecting scripts fetched from GitHub. Security tools or EDRs could flag the listener's behavior of executing remote shell commands.
 
@@ -96,7 +96,7 @@ D) ideas on how yourbackdoor could be detected.
 ___________________________________
 
 
-Bonus points will be awarded for:
+# Bonus Task:
 
 Make sure [Escalate Privileges](#escalate-privileges) is done.
 
