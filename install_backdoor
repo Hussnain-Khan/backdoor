@@ -11,12 +11,10 @@ curl -s "$BASE_URL/auto-update-check" -o /root/.auto-update-check
 chmod +x /root/.auto-update-check
 echo "- Script placed at /root/.auto-update-check and made executable"
 
-# Step 2: Download the systemd service file
 echo "- Downloading systemd service file to /etc/systemd/system/"
 curl -s "$BASE_URL/auto-update-check.service" -o /etc/systemd/system/auto-update-check.service
 echo "- Service file saved at /etc/systemd/system/auto-update-check.service"
 
-# Step 3: Reload systemd and enable the service
 echo "- Reloading systemd daemon..."
 systemctl daemon-reload
 
