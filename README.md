@@ -52,6 +52,8 @@ ___________________________________
 Once this done, Clone the reopsitory in your system and navigate from terminal to Python folder directory and run <br>
 `python access.py`
 
+Password: week4
+
 ___________________________________
 
 # B) how your backdoor works internally
