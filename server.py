@@ -1,13 +1,9 @@
-# -*- coding: utf-8 -*-
 import socket
 import subprocess
-import hashlib
 
 HOST = ''
 PORT = 4444
-
-# SHA256 hash of "week4"
-HASHED_PASSWORD = "a76beefa34107f7c2cb32b78f8583b4bf550834075b221fd25c1c691cb3da124"
+EXPECTED_PASSWORD = "week4"
 
 def start_server():
     print("[SERVER] Initializing...")
@@ -22,30 +18,16 @@ def start_server():
             client, address = server.accept()
             print("[SERVER] Connected to %s" % str(address))
 
-            raw_data = client.recv(1024)
-
-            try:
-                password = raw_data.decode('utf-8').strip()
-            except:
-                password = raw_data.strip()
-
+            password = client.recv(1024).strip()
             print("[LOGIN ATTEMPT] Password received: '%s'" % password)
 
-            try:
-                # Force bytes before hashing
-                hashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
-            except:
-                hashed = hashlib.sha256(password).hexdigest()
-
-            print("[DEBUG] Computed hash: %s" % hashed)
-
-            if hashed == HASHED_PASSWORD:
+            if password.lower() == EXPECTED_PASSWORD.lower():
                 client.send("success")
                 print("[SERVER] Login successful.")
                 handle_client(client)
             else:
                 client.send("fail")
-                print("[SERVER] Login failed. Hash mismatch.")
+                print("[SERVER] Login failed. Expected: '%s', Got: '%s'" % (EXPECTED_PASSWORD, password))
                 client.close()
         except Exception as e:
             print("[SERVER ERROR] %s" % str(e))

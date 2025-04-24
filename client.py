@@ -11,7 +11,7 @@ def connect_to_server():
     print("[CLIENT] Connected.")
 
     password = getpass("Enter password: ")
-    client.send(password.encode())  # Python 3 fix
+    client.send(password.encode())
 
     try:
         response = client.recv(1024).decode().strip()
