@@ -106,6 +106,6 @@ curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/Bonus/dete
 Make the script executable <br><br>
 chmod +x detect_backdoor.sh
 
-# Step 3: Run the script <br><br>
+Run the script <br><br>
 ./detect_backdoor.sh
 
