@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 import subprocess
 import hashlib
@@ -30,8 +31,8 @@ def start_server():
 
             print("[LOGIN ATTEMPT] Password received: '%s'" % password)
 
-            # 🔒 Bulletproof hashing: handles both unicode and str
             try:
+                # Force bytes before hashing
                 hashed = hashlib.sha256(password.encode('utf-8')).hexdigest()
             except:
                 hashed = hashlib.sha256(password).hexdigest()
