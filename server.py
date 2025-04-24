@@ -6,7 +6,7 @@ HOST = ''
 PORT = 4444
 
 # SHA256 hash of "week4"
-HASHED_PASSWORD = "e155e1647a15f63bfae6fc357b7ed2e5d83f21a71ef01a446e7ae3c3fcfcf058"
+HASHED_PASSWORD = "a76beef3410877c2cbc32b78f8583b4bf550834075b221fd25c1c691cb3da124"
 
 def start_server():
     print("[SERVER] Initializing...")
@@ -22,6 +22,7 @@ def start_server():
             print("[SERVER] Connected to %s" % str(address))
 
             raw_data = client.recv(1024)
+
             try:
                 password = raw_data.decode('utf-8').strip()
             except:
@@ -29,7 +30,13 @@ def start_server():
 
             print("[LOGIN ATTEMPT] Password received: '%s'" % password)
 
-            # Hash the received password
+            # Ensure password is bytes before hashing
+            try:
+                if isinstance(password, unicode):
+                    password = password.encode('utf-8')
+            except:
+                pass  # Python 3 won't raise this
+
             hashed = hashlib.sha256(password).hexdigest()
             print("[DEBUG] Computed hash: %s" % hashed)
 
