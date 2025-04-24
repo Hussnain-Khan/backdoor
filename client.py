@@ -11,13 +11,13 @@ def connect_to_server():
     print("[CLIENT] Connected.")
 
     password = getpass("Enter password: ")
-    client.send(password.encode())
+    client.send(password)
 
     try:
-        response = client.recv(1024).decode().strip()
-        print(f"[CLIENT DEBUG] Server responded with: '{response}'")
+        response = client.recv(1024).strip()
+        print("[CLIENT DEBUG] Server responded with: '%s'" % response)
     except Exception as e:
-        print(f"[CLIENT ERROR] Failed to receive response: {e}")
+        print("[CLIENT ERROR] Failed to receive response: %s" % str(e))
         client.close()
         return
 
@@ -29,16 +29,16 @@ def connect_to_server():
         return
 
     while True:
-        cmd = input(">>> ")
+        cmd = raw_input(">>> ")
         if cmd.lower() == "exit":
-            client.send(cmd.encode())
+            client.send(cmd)
             break
 
         if cmd.strip() == "":
             continue
 
-        client.send(cmd.encode())
-        result = client.recv(4096).decode()
+        client.send(cmd)
+        result = client.recv(4096)
         print(result)
 
     client.close()
