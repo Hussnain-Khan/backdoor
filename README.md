@@ -21,13 +21,13 @@ Enable the host to communicate with the VM over port 4444, add this rule in Virt
 
 Go to Settings > Network > Adapter 1 → click Port Forwarding
 
-Add the following rule:
-Name: backdoor-link
-Protocol: TCP
-Host IP: 127.0.0.1
-Host Port: 4444
-Guest IP: (leave blank or default)
-Guest Port: 4444
+Add the following rule:<br>
+Name: backdoor-link<br>
+Protocol: TCP<br>
+Host IP: 127.0.0.1<br>
+Host Port: 4444<br>
+Guest IP: (leave blank or default)<br>
+Guest Port: 4444<br>
 
 ___________________________________
 
