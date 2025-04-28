@@ -15,7 +15,7 @@ Python Scripts:
 
 - access.py: Client interface (run from attacker machine)
 
-# A) how to install it in the week4 virtual machine
+# A) how to install it in the virtual machine
 
 Enable the host to communicate with the VM over port 4444, add this rule in VirtualBox:
 
